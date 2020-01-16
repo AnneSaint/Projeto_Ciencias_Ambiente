@@ -1,0 +1,47 @@
+const int pinoSensor = A0; //PINO UTILIZADO PELO SENSOR
+const int bomba = 7;
+const int btn = 5;
+int btnstate = 0;
+int valorLido; //VARIÁVEL QUE ARMAZENA O PERCENTUAL DE UMIDADE DO SOLO
+
+void setup(){
+ pinMode(bomba, OUTPUT);
+ Serial.begin(9600); //INICIALIZA A SERIAL
+ Serial.println("Lendo a umidade do solo..."); //IMPRIME O TEXTO NO MONITOR SERIAL
+ delay(1000); //INTERVALO DE 1 SEGUNDOS
+}
+
+void loop(){  
+valorLido = analogRead(pinoSensor);
+Serial.println(valorLido);
+btnstate = digitalRead(btn);
+
+while (btnstate == 1){
+  digitalWrite(bomba, HIGH);
+}
+
+if((valorLido >=150) && (valorLido <=165)){
+  Serial.println("A caixa está pouco cheia");
+}
+
+if ((valorLido >=140)&& (valorLido <150)){
+  Serial.println("A caixa está meio cheia");
+}
+if(valorLido >=130 && valorLido <140){
+  Serial.println("A caixa está muito cheia");
+}
+
+if (valorLido <130){
+    digitalWrite(bomba, HIGH);
+    Serial.println("Caixa totalmente cheia, temos cerca de 160ml acumulada");
+    delay(1000);
+    digitalWrite(bomba, LOW);
+        
+}
+else{
+  Serial.println("A caixa está seca");
+  digitalWrite(bomba, HIGH);
+}
+
+delay(3500);
+}
