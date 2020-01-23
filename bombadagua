@@ -1,47 +1,59 @@
-const int pinoSensor = A0; //PINO UTILIZADO PELO SENSOR
-const int bomba = 7;
-const int btn = 5;
-int btnstate = 0;
-int valorLido; //VARIÁVEL QUE ARMAZENA O PERCENTUAL DE UMIDADE DO SOLO
+// Declaração dos pinos
+const int pinoSensor = A0;             // pino utilizado pelo sensor1
+const int pinoSensor2 = A1;           // pino utilizado pelo sensor 2
+const int bomba = A2;                 // pino da bomba
+const int led = 6;                  // led vermelho
+const int led2 = 5;                // led verde
+const int led3 = 4;               // led amarelo
+
+int valorLido;  // variavel para armazenar o valor lido no sensor 1
+int valorLido2; // variavel para armazenar o valor lido no sensor 2
 
 void setup(){
  pinMode(bomba, OUTPUT);
- Serial.begin(9600); //INICIALIZA A SERIAL
- Serial.println("Lendo a umidade do solo..."); //IMPRIME O TEXTO NO MONITOR SERIAL
- delay(1000); //INTERVALO DE 1 SEGUNDOS
+ pinMode(led, OUTPUT);
+ pinMode(led2, OUTPUT);
+ pinMode(led3, OUTPUT);
+ Serial.begin(9600); // inicializa a serial
+ delay(1000);
 }
 
 void loop(){  
+
 valorLido = analogRead(pinoSensor);
-Serial.println(valorLido);
-btnstate = digitalRead(btn);
+valorLido2 = analogRead(pinoSensor2);
 
-while (btnstate == 1){
-  digitalWrite(bomba, HIGH);
+Serial.print(valorLido);
+Serial.print("\t");
+Serial.println(valorLido2);
+
+if(valorLido <500 && valorLido2 >500){
+  Serial.println("Tem pouca agua");
+  digitalWrite(led3, HIGH);
+  digitalWrite(led2, LOW);
+  digitalWrite(led, LOW);
+  analogWrite(bomba, 0);
 }
 
-if((valorLido >=150) && (valorLido <=165)){
-  Serial.println("A caixa está pouco cheia");
+else if(valorLido>= 500 && valorLido2>=500){
+  Serial.println("A caixa está seca");
+  digitalWrite(led, HIGH);
+  digitalWrite(led2, LOW);
+  digitalWrite(led3, LOW);
+  analogWrite(bomba, 0);
+  
 }
+else if(valorLido <500 && valorLido2 <500){
+  Serial.println("A caixa está cheia");
+  analogWrite(bomba, 1024);
+  digitalWrite(led, LOW);
+  digitalWrite(led3, LOW);
+  digitalWrite(led2, HIGH);
 
-if ((valorLido >=140)&& (valorLido <150)){
-  Serial.println("A caixa está meio cheia");
-}
-if(valorLido >=130 && valorLido <140){
-  Serial.println("A caixa está muito cheia");
-}
-
-if (valorLido <130){
-    digitalWrite(bomba, HIGH);
-    Serial.println("Caixa totalmente cheia, temos cerca de 160ml acumulada");
-    delay(1000);
-    digitalWrite(bomba, LOW);
-        
 }
 else{
-  Serial.println("A caixa está seca");
-  digitalWrite(bomba, HIGH);
+  Serial.println("Tem algo errado");
 }
 
-delay(3500);
+delay(3500); // delay entre as leituras
 }
